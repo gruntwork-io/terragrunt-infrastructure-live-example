@@ -31,4 +31,4 @@ allocated_storage = "100"
 storage_type      = "standard"
 
 master_username = "admin"
-# To avoid storing your DB password in the code, set the password as the environment variable TF_VAR_master_password
+# TODO: To avoid storing your DB password in the code, set it as the environment variable TF_VAR_master_password
