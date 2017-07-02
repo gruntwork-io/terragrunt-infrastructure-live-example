@@ -33,13 +33,16 @@ Pre-requisites:
 
 To deploy a single module:    
 
-1. `cd` into the module's folder (e.g. `cd non-prod/us-east-1/qa/mysql`).    
+1. `cd` into the module's folder (e.g. `cd non-prod/us-east-1/qa/mysql`). 
+1. Note: if you're deploying the MySQL DB, you'll need to configure your DB password as an environment variable:
+   `export TF_VAR_master_password=(...)`.
 1. Run `terragrunt plan` to see the changes you're about to apply.
 1. If the plan looks good, run `terragrunt apply`.
 
-To deploy everything in a single account:
+To deploy everything in a single region:
 
-1. `cd` into the account folder (e.g. `cd non-prod`).
+1. `cd` into the region folder (e.g. `cd non-prod/us-east-1`).
+1. Configure the password for the MySQL DB as an environment variable: `export TF_VAR_master_password=(...)`.
 1. Run `terragrunt plan-all` to see all the changes you're about to apply.
 1. If the plan looks good, run `terragrunt apply-all`.
 
