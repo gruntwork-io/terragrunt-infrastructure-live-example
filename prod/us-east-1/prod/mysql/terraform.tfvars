@@ -24,7 +24,7 @@ terragrunt = {
 
 aws_region = "us-east-1"
 
-name           = "mysql-prod"
+name           = "mysql_prod"
 instance_class = "db.t2.medium"
 
 allocated_storage = "100"

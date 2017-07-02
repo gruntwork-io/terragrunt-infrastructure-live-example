@@ -24,7 +24,7 @@ terragrunt = {
 
 aws_region = "us-east-1"
 
-name           = "mysql-qa"
+name           = "mysql_qa"
 instance_class = "db.t2.micro"
 
 allocated_storage = "20"
