@@ -27,7 +27,7 @@ aws_region = "us-east-1"
 name           = "mysql_prod"
 instance_class = "db.t2.medium"
 
-allocated_storage = "100"
+allocated_storage = 100
 storage_type      = "standard"
 
 master_username = "admin"

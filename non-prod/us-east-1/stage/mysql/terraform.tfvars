@@ -27,7 +27,7 @@ aws_region = "us-east-1"
 name           = "mysql_stage"
 instance_class = "db.t2.micro"
 
-allocated_storage = "20"
+allocated_storage = 20
 storage_type      = "standard"
 
 master_username = "admin"
