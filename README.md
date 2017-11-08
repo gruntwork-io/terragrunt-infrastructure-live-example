@@ -128,8 +128,7 @@ Where:
   
 * **Resource**: Within each environment, you deploy all the resources for that environment, such as EC2 Instances, Auto
   Scaling Groups, ECS Clusters, Databases, Load Balancers, and so on. Note that the Terraform code for most of these
-  resources lives in the [terragrunt-infrastructure-modules-example 
-  repo
+  resources lives in the [terragrunt-infrastructure-modules-example repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example).
 
   ## Creating and using root (account) level variables
 
