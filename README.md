@@ -161,5 +161,3 @@ Where:
   ```
 
   As you can see, this allows us create a module so that it will dynamically pull values (image_id, key_name, security_groups) from the state file for whichever region it is being launched into.
-
-  Once this is set up, whenever you come across a variable that is needed every, simply add it to the account.tfvars file.
