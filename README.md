@@ -132,32 +132,4 @@ Where:
 
 ## Creating and using root (account) level variables
 
-In the situation where you have multiple AWS accounts it is usually needed to pass common variables down to each of your modules. Rather than defining the variables for each resource, in every region, and in every environment, we can inherit them from the root `terraform.tfvars` file and corresponding `account.tfvars` file. (See the actual files in this repo for the needed config)
-
-This is especially handy when pulling values from a terraform_remote_state data source. For example, consider this module that you want to deploy to every region and every environment.
-
-```
-provider "aws" {
-  region  = "${var.region}"
-  profile = "${var.aws_profile}"
-}
-
-data "terraform_remote_state" "common" {
-  backend = "s3"
-  config {
-    bucket  = "${var.tfstate_global_bucket}"
-    key     = "${var.region}/prod/terraform.tfstate"
-    region  = "${var.tfstate_global_bucket_region}"
-    profile = "${var.aws_profile}"
-  }
-}
-
-resource "aws_launch_configuration" "web" {
-  image_id             = "${data.terraform_remote_state.common.custom_linux_ami}"
-  instance_type        = "m3.medium"
-  key_name             = "${data.terraform_remote_state.common.ec2_key}"
-  security_groups      = ["${data.terraform_remote_state.common.web_host}"]
-}
-```
-
-As you can see, this allows us create a module so that it will dynamically pull values (image_id, key_name, security_groups) from the state file for whichever region it is being launched into.
+In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each of your modules. Rather than copy/pasting the same variables into each `.tfvars` file, in every region, and in every environment, you can inherit them from the root `terraform.tfvars` file and corresponding `account.tfvars` file (see the files of the same name in this repo for the example config).
