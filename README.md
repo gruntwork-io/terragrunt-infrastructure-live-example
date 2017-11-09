@@ -128,5 +128,8 @@ Where:
   
 * **Resource**: Within each environment, you deploy all the resources for that environment, such as EC2 Instances, Auto
   Scaling Groups, ECS Clusters, Databases, Load Balancers, and so on. Note that the Terraform code for most of these
-  resources lives in the [terragrunt-infrastructure-modules-example 
-  repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example).
+  resources lives in the [terragrunt-infrastructure-modules-example repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example).
+
+## Creating and using root (account) level variables
+
+In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each of your modules. Rather than copy/pasting the same variables into each `.tfvars` file, in every region, and in every environment, you can inherit them from the root `terraform.tfvars` file and corresponding `account.tfvars` file (see the files of the same name in this repo for the example config).
