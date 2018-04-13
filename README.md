@@ -38,6 +38,7 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 1. `cd` into the module's folder (e.g. `cd non-prod/us-east-1/qa/mysql`). 
 1. Note: if you're deploying the MySQL DB, you'll need to configure your DB password as an environment variable:
    `export TF_VAR_master_password=(...)`.
+1. Run `terragrunt init` to initialize provider plugins.
 1. Run `terragrunt plan` to see the changes you're about to apply.
 1. If the plan looks good, run `terragrunt apply`.
 
@@ -46,6 +47,7 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 1. `cd` into the region folder (e.g. `cd non-prod/us-east-1`).
 1. Configure the password for the MySQL DB as an environment variable: `export TF_VAR_master_password=(...)`.
+1. Manually go into each module's folder and run `terragrunt init` to initialize provider plugins.
 1. Run `terragrunt plan-all` to see all the changes you're about to apply.
 1. If the plan looks good, run `terragrunt apply-all`.
 
