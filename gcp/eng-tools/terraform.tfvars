@@ -1,15 +1,13 @@
 # Terragrunt is a thin wrapper for Terraform that provides extra tools for working with multiple Terraform modules,
 # remote state, and locking: https://github.com/gruntwork-io/terragrunt
 terragrunt = {
-  # Configure Terragrunt to automatically store tfstate files in an S3 bucket
+  # Configure Terragrunt to automatically store tfstate files in an gcs bucket
   remote_state {
-    backend = "s3"
+    backend = "gcs"
     config {
-      encrypt        = true
-      bucket         = "terragrunt-example-prod-terraform-state"
-      key            = "${path_relative_to_include()}/terraform.tfstate"
-      region         = "us-west-2"
-      dynamodb_table = "terraform-locks"
+      bucket         = "terragrunt-eng-tools-terraform-state"
+      prefix         = "${path_relative_to_include()}/terraform.tfstate"
+      project        = "eng-tools"
     }
   }
   # Configure root level variables that all resources can inherit
