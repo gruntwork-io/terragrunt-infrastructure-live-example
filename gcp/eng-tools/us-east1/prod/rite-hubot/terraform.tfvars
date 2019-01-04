@@ -7,5 +7,3 @@ terragrunt = {
     source = "git::ssh://git@github.com/RitualCo/terragrunt-infrastructure-modules.git//gcp/rite-hubot"
   }
 }
-
-project_name = "eng-tools"
