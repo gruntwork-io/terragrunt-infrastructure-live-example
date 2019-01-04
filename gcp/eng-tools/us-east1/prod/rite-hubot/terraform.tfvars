@@ -4,6 +4,6 @@ terragrunt = {
   }
 
   terraform {
-    source = "git::ssh://git@github.com/RitualCo/terragrunt-infrastructure-modules.git//gcp/rite-hubot"
+    source = "git::ssh://git@github.com/RitualCo/terragrunt-infrastructure-modules.git//gcp/rite-hubot?ref=v0.0.3"
   }
 }
