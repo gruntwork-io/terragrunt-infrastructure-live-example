@@ -12,7 +12,7 @@ This repo shows an example of how to use the modules from the `terragrunt-infras
 deploy an Auto Scaling Group (ASG) and a MySQL DB across three environments (qa, stage, prod) and two AWS accounts 
 (non-prod, prod), all without duplicating any of the Terraform code. That's because there is just a single copy of 
 the Terraform code, defined in the `terragrunt-infrastructure-modules-example` repo, and in this repo, we solely define
-`terraform.tfvars` files that reference that code (at a specific version, too!) and fill in variables specific to each 
+`terragrunt.hcl` files that reference that code (at a specific version, too!) and fill in variables specific to each 
 environment. 
 
 Note: This code is solely for demonstration purposes. This is not production-ready code, so use at your own risk. If 
@@ -26,8 +26,9 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 ### Pre-requisites 
 
-1. Install [Terraform](https://www.terraform.io/) and [Terragrunt](https://github.com/gruntwork-io/terragrunt).
-1. Update the `bucket` parameter in `non-prod/terraform.tfvars` and `prod/terraform.tfvars` to unique names. We use S3
+1. Install [Terraform](https://www.terraform.io/) version `0.12.0` or newer and 
+   [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.19.0` or newer. 
+1. Update the `bucket` parameter in `non-prod/terragrunt.hcl` and `prod/terragrunt.hcl` to unique names. We use S3
    [as a Terraform backend](https://www.terraform.io/docs/backends/types/s3.html) to store your Terraform state, and
    S3 bucket names must be globally unique. The names currently in the file are already taken, so you'll have to 
    specify your own.
@@ -134,4 +135,6 @@ Where:
 
 ## Creating and using root (account) level variables
 
-In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each of your modules. Rather than copy/pasting the same variables into each `.tfvars` file, in every region, and in every environment, you can inherit them from the root `terraform.tfvars` file and corresponding `account.tfvars` file (see the files of the same name in this repo for the example config).
+In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each 
+of your modules. Rather than copy/pasting the same variables into each `terragrunt.hcl` file, in every region, and in 
+every environment, you can inherit them from the `inputs` defined in the root `terragrunt.hcl` file.
