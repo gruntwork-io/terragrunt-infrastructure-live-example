@@ -1,0 +1,4 @@
+# This is intentionally empty object. This YAML file is used as a catch all to return an empty map when expected yaml
+# vars do not exist. Note that this file can not be completely empty because terragrunt's yamldecode function expects an
+# object, and it doesn't treat empty files as an empty object (you get a syntax error).
+{}
