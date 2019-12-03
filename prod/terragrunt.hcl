@@ -35,10 +35,10 @@ inputs = merge(
   # Terraform >=0.12 that all vars must be defined as variable blocks in modules. Terragrunt inputs are not affected by
   # this restriction.
   yamldecode(
-    file("${get_terragrunt_dir()}/${find_in_parent_folders("env.yaml", local.default_yaml_path)}"),
+    file("${get_terragrunt_dir()}/${find_in_parent_folders("region.yaml", local.default_yaml_path)}"),
   ),
   yamldecode(
-    file("${get_terragrunt_dir()}/${find_in_parent_folders("region.yaml", local.default_yaml_path)}"),
+    file("${get_terragrunt_dir()}/${find_in_parent_folders("env.yaml", local.default_yaml_path)}"),
   ),
   {
     aws_profile                  = "prod"
