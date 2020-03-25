@@ -1,0 +1,260 @@
+---
+- name: Configuring EC2 instances for kafka
+  hosts: localhost
+  connection: local
+#  remote_user: ubuntu
+#  become: true
+#  become_method: sudo
+  gather_facts: no
+  vars:
+      - REGION: '{{REGION}}'
+      - ec2_tag_key: '{{ec2_tag_key}}'
+      - ec2_tag_value: '{{ec2_tag_value}}'
+      - ec2_tag_zookeerp_value: '{{ec2_tag_zookeerp_value}}'
+# --------------------------------------
+##  JAVA
+# --------------------------------------
+      - java_home: /usr/local/java/jdk
+      #- jdk_archive_url: http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz
+      #- jdk_archive_filename: jdk-8u171-linux-x64.tar.gz
+      - jdk_archive_url: http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.tar.gz
+      - jdk_archive_filename: jdk-8u181-linux-x64.tar.gz
+      - jdk_version: jdk1.8.0_181
+      #- jdk_version: jdk1.8.0_171
+
+# --------------------------------------
+## Common -  Common Location information.
+# --------------------------------------
+#common:
+      - install_base_path: /usr/local
+      - soft_link_base_path: /opt
+
+# --------------------------------------
+## kafka
+# --------------------------------------
+#kafka:
+      - version: 0.10.2.1
+      - port: 9092
+      - zookeeper_port: 2181
+      - data_store: /mnt/data/kafka
+      - log4j_rootlogger: INFO
+      - topics: [ A, B, C, D ]
+      - user: kafkaadmin
+      - group: kafkaadmin
+      - password: $6$SDOmVPRk$Jcb/qm2QTKsLABvBHx/CYtsgmShobAr7BwhWWbrrQIHfjndIzcbJhv1b2Dh2Rv.KgWhjTipT3MJUBQFf1g5O70
+      - replication_factor: 1
+      - partition_count: 8
+      - url: http://www-us.apache.org/dist/kafka/{{ version }}/kafka_2.11-{{ version }}.tgz
+      - server_properties_url: https://raw.githubusercontent.com/saimantham/terragrunt-infrastructure-live-example/master/scripts/server.properties 
+
+  tasks:
+#--------------------------------------
+## Creating User for kafka
+#--------------------------------------
+   - name: sleep for 240 seconds and continue with play
+     wait_for: timeout=240
+  
+   - name: Create a User `"{{ user }}"`
+     user: name={{ user }} password={{ password }}
+
+
+
+#--------------------------------------
+### ---- Collecting Private IPs of Kafka
+#--------------------------------------
+   - name: Collecting Private IP address of Kafka nodes
+     shell: "aws --region {{ REGION }} ec2 describe-instances --filters \"Name=tag:{{ ec2_tag_key }},Values={{ ec2_tag_value }}\" \"Name=network-interface.addresses.private-ip-address,Values=*\" --query 'Reservations[*].Instances[*].{InstanceId:InstanceId,PrivateDnsName:PrivateDnsName,State:State.Name, IP:NetworkInterfaces[0].PrivateIpAddress}'|grep -w IP|cut -d ':' -f 2|tr -d ','|tr -d '\"'|sed 's/ //g'"
+     register: private_ips
+
+
+#--------------------------------------
+#Installing Java/Jdk
+#--------------------------------------
+
+   #- name: Install JDK on Zookeeper instances
+   - name: JDK | Oracle JDK | Make sure openjdk is uninstalled
+     apt: pkg=openjdk-6-jdk state=absent
+
+   - name: JDK | Oracle JDK | Make sure openjdk is uninstalled
+     apt: pkg=openjdk-7-jdk state=absent
+
+   - name: JDK | Oracle JDK | Make sure openjdk is uninstalled
+     apt: pkg=openjdk-8-jdk state=absent
+
+   - name: JDK | Oracle JDK | Make a directory that holds the Java binaries
+     file: path=/usr/local/java state=directory
+
+   - name: Download JDK
+     get_url: url={{ jdk_archive_url }} dest=/mnt/{{ jdk_archive_filename }} mode=0644 validate_certs=no headers='Cookie:oraclelicense=accept-securebackup-cookie'
+
+   - name: JDK | Oracle JDK | Unpack the compressed JDK binaries
+     shell: "tar -xvzf /mnt/{{ jdk_archive_filename }} -C /usr/local/java creates=/usr/local/java/{{ jdk_version }}"
+
+   - name: JDK | Oracle JDK | Update the symbolic link to the JDK install
+     file: path={{ java_home }} src=/usr/local/java/{{ jdk_version }} state=link force=yes
+
+   - name: JDK | Oracle JDK | Add the JDK binaries to the system path (/etc/profile)
+     lineinfile: dest=/etc/profile regexp='^JAVA_HOME={{java_home}}' line="JAVA_HOME={{java_home}}" state=present
+
+   - name: JDK | Oracle JDK | Add the JDK binaries to the system path (/etc/profile)
+     lineinfile: dest=/etc/profile regexp='^PATH=.*JAVA_HOME.*' line="PATH=$PATH:$HOME/bin:$JAVA_HOME/bin" state=present
+
+   - name: Remove alternatives before we set them.
+     command: rm -f /var/lib/alternatives/{{ item }}
+     with_items:
+       - java
+       - javac
+       - javaws
+       - javah
+       - jar
+       - jps
+
+   - name: JDK | Oracle JDK | Inform the system where Oracle JDK is located
+     alternatives: name={{ item }} link=/usr/bin/{{ item }} path=/usr/local/java/jdk/bin/{{ item }}
+     with_items:
+       - java
+       - javac
+       - javaws
+       - javah
+       - jar
+       - jps
+
+#--------------------------------------
+# Downloading and installing Kafka
+#--------------------------------------
+   - name: Download Kafka
+     get_url: url={{ url }} dest=/mnt/kafka_2.11-{{ version }}.tgz mode=0644 validate_certs=no
+
+   - name: Copy and UnArchive the Package in Destination Server.
+     unarchive: creates={{ install_base_path }}/kafka_2.11-{{ version }} copy=no src=/mnt/kafka_2.11-{{ version }}.tgz dest={{ install_base_path }} owner={{ user }} group={{ group }}
+
+   - name: Change Directory Permissions.
+     file: path={{ install_base_path }}/kafka_2.11-{{ version }} owner={{ user }} group={{ group }} recurse=yes
+
+   - name: Creating a Symbolic Link in {{ install_base_path }}/kafka.
+     file: src={{ install_base_path }}/kafka_2.11-{{ version }} path={{ soft_link_base_path }}/kafka state=link owner={{ user }} group={{ group }}
+
+#--------------------------------------
+##------ Configuring Kafka
+#--------------------------------------
+   - name: Creating data directory
+     file: path=/mnt/data state=directory owner={{ user }} group={{ group }}
+
+   - name: Configuring log4j.properties file
+     lineinfile:
+       path: "{{ soft_link_base_path }}/kafka/config/log4j.properties"
+       line: "{{ item.line }}"
+       regexp: '^{{ item.regexp }}'
+     with_items:
+       - { regexp: 'log4j.rootLogger=', line: 'log4j.rootLogger={{ log4j_rootlogger }}, stdout' }
+
+   - lineinfile:
+       path: "{{ soft_link_base_path }}/kafka/config/log4j.properties"
+       insertbefore: 'log4j.rootLogger='
+       #regexp: '^log4j.rootLogger='
+       line: 'kafka.logs.dir=logs'
+  
+
+##---- Configuring changes for server.properties
+#
+   - name: Removing old server.properties file
+     file: path="{{ soft_link_base_path }}/kafka/config/server.properties" state=absent
+
+   - name: Download server.properties from repo
+     get_url: url={{ server_properties_url }} dest={{ soft_link_base_path }}/kafka/config/server.properties mode=0644 validate_certs=no
+
+
+   - name: Collecting Private IP address of Zookeeper nodes
+     shell: "aws --region {{ REGION }} ec2 describe-instances --filters \"Name=tag:{{ ec2_tag_key }},Values={{ ec2_tag_zookeerp_value }}\" \"Name=network-interface.addresses.private-ip-address,Values=*\" --query 'Reservations[*].Instances[*].{InstanceId:InstanceId,PrivateDnsName:PrivateDnsName,State:State.Name, IP:NetworkInterfaces[0].PrivateIpAddress}'|grep -w IP|cut -d ':' -f 2|tr -d ','|tr -d '\"'|sed 's/ //g'"
+     register: private_ips_zookeeper
+
+## Collecting zookeeperIP and merger it with port
+   - shell: "echo {{private_ips_zookeeper.stdout_lines}}|tr -d '[ ]' | tr -d '\"'|tr -d '[:alpha:]' | tr ',' '\\n'|sed '/:[0-9]*$/ ! s/$/:{{zookeeper_port}}/' | tr '\\n' ', ' | sed 's|,|,|g' | sed 's/,$//'"
+     register: zookeeper_ip_combine
+
+## Broekr_ID, collecting counting numbers of kafka nodes
+#   - shell: "echo {{ private_ips.stdout_lines }}|tr -d '[ ]'|tr -d '\"'|tr -d '[:alpha:]'|tr ',' '\n'|wc -l"
+#     register: kafka_broker_id
+
+   - name: Removing previous temprory file if it is there
+     file: path=/tmp/BrokeID state=absent
+
+   - name: Create temprory brokeid collection file
+     file: path=/tmp/BrokeID state=touch
+
+   - name: Collecting kafka brokerid in a file
+     lineinfile:
+       path: "/tmp/BrokeID"
+       line: "{{ item.0}}={{ item.1 }}:{{port}}"
+     with_indexed_items:
+       - "{{ private_ips.stdout_lines }}"
+
+   - name: Checking brokerID number
+     shell: "myip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4); grep $myip /tmp/BrokeID |cut -d '=' -f 1"
+     register: kafka_broker_id
+
+   - name: "Initializing brokerid File for Zookeeper {{ inventory_hostname }}"
+     shell: "hostname"
+     register: hostname
+
+
+   - name: Adding parameters for server.properties file
+     lineinfile:
+       path: "{{ soft_link_base_path }}/kafka/config/server.properties"
+       line: "{{ item.line }}"
+       regexp: '^{{ item.regexp }}'
+     with_items:
+       - { regexp: 'port=', line: 'port={{ port }}' }
+       - { regexp: 'advertised.host.name=', line: 'advertised.host.name={{ hostname.stdout }}' }
+       - { regexp: 'log.dirs=', line: 'log.dirs={{ data_store }}' }
+       - { regexp: 'zookeeper.connect=', line: 'zookeeper.connect={{ zookeeper_ip_combine.stdout }}' }
+       - { regexp: 'broker.id=', line: 'broker.id={{ kafka_broker_id.stdout }}' }
+       - { regexp: 'listeners=', line: 'listeners=PLAINTEXT://0.0.0.0:{{ port }}' }
+       - { regexp: 'vertised.listeners=', line: 'vertised.listeners=PLAINTEXT://{{hostname.stdout}}:{{ port }}' }
+
+# Starting Kafka server in port 9091
+   - name: Create Kafka server script to start in port {{ port }}
+     copy:
+      content: "#!/bin/sh\necho -e \"Starting {{ port }} Server\"\nnohup sh {{ soft_link_base_path }}/kafka/bin/kafka-server-start.sh {{ soft_link_base_path }}/kafka/config/server.properties &"
+      dest: "{{ soft_link_base_path }}/kafka/config/kafka_server_starter.sh"
+      owner: "{{ user }}"
+      group: "{{ group }}"
+      mode: 0744
+
+   - name: Creating data directory for kafka logs
+     file: path={{ data_store }} state=directory owner={{ user }} group={{ group }}
+
+#--------------------------------------
+#Starting Kafka server
+#--------------------------------------
+
+   - name: Lets wait to see if we have Port {{ zookeeper_port }} is avialable.
+     wait_for: host="{{item.1}}" port="{{zookeeper_port}}" delay=5 timeout=15
+     with_indexed_items:
+       - "{{ private_ips_zookeeper.stdout_lines }}"
+
+   - name: Starting kafka server on port 9091/9092.
+     command: bash "{{ soft_link_base_path }}"/kafka/config/kafka_server_starter.sh
+     register: output
+
+   - name: Lets through some Debug.stdout Output.
+     debug: msg="{{output.stdout}}"
+
+   - name: Lets through some Debug.stderr Output.
+     debug: msg="{{output.stderr}}"
+
+
+#--------------------------------------
+#Creating Topics
+#--------------------------------------
+
+# Creating Topics for the first Time
+   - name: Lets wait for 9092 to be available.
+     wait_for: port={{ port }} delay=5 timeout=15
+
+   - name: Creating Topics.
+     command: bash "{{ soft_link_base_path }}"/kafka/bin/kafka-topics.sh --create --zookeeper {{ zookeeper_ip_combine.stdout }}  --replication-factor {{ replication_factor }} --partitions {{ partition_count }} --topic {{ item }}
+     with_items: "{{ topics }}"
+     when: kafka_broker_id.stdout == "1"
+ 
+#--------------------------------------
