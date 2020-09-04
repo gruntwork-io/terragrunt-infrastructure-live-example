@@ -2,6 +2,6 @@
 # terragrunt.hcl configuration.
 locals {
   account_name   = "non-prod"
-  aws_account_id = "111111111"
+  aws_account_id = "replaceme" # TODO: replace me with your AWS account ID!
   aws_profile    = "non-prod"
 }
