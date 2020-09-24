@@ -26,8 +26,8 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 ### Pre-requisites
 
-1. Install [Terraform](https://www.terraform.io/) version `0.12.0` or newer and
-   [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.23.0` or newer.
+1. Install [Terraform](https://www.terraform.io/) version `0.13.3` or newer and
+   [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.25.1` or newer.
 1. Update the `bucket` parameter in `non-prod/terragrunt.hcl` and `prod/terragrunt.hcl` to unique names. We use S3
    [as a Terraform backend](https://www.terraform.io/docs/backends/types/s3.html) to store your Terraform state, and
    S3 bucket names must be globally unique. The names currently in the file are already taken, so you'll have to
