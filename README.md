@@ -35,6 +35,7 @@ you are interested in battle-tested, production-ready Terraform code, check out 
    set the environment variable `TG_BUCKET_PREFIX` to set a custom prefix.
 1. Configure your AWS credentials using one of the supported [authentication
    mechanisms](https://www.terraform.io/docs/providers/aws/#authentication).
+1. Fill in your AWS Account ID's in `prod/account.hcl` and `non-prod/account.hcl`.
 
 
 ### Deploying a single module
