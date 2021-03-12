@@ -19,3 +19,7 @@
 build/
 */build/
 out/
+
+# Ignore Terraform lock files, as we want to test the Terraform code in these repos with the latest provider
+# versions.
+.terraform.lock.hcl
