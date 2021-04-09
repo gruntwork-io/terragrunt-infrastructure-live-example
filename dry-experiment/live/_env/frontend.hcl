@@ -1,5 +1,7 @@
 locals {
-  parsed_path = regex(".*/live/(?P<env>.*?)/(?P<region>.*?)/(?P<module>.*)", abspath(get_terragrunt_dir()))
+  # abspath(get_original_terragrunt_dir()) should return something like <PATH>/live/<ENV>/<REGION>/<MODULE>. We use a regex to parse it.
+  parsed_path = regex("(?P<repo_root>.*?/live)/(?P<env>.*?)/(?P<region>.*?)/(?P<module>.*)", abspath(get_original_terragrunt_dir()))
+  repo_root   = local.parsed_path.repo_root
   env         = local.parsed_path.env
   region      = local.parsed_path.region
   module      = local.parsed_path.module
@@ -23,11 +25,11 @@ locals {
 }
 
 dependency "vpc" {
-  config_path = "${get_terragrunt_dir()}/../vpc"
+  config_path = "${get_original_terragrunt_dir()}/../vpc"
 }
 
 dependency "backend" {
-  config_path = "${get_terragrunt_dir()}/../backend"
+  config_path = "${get_original_terragrunt_dir()}/../backend"
 }
 
 inputs = merge(

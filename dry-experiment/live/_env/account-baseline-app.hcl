@@ -1,5 +1,7 @@
 locals {
-  parsed_path = regex(".*/live/(?P<env>.*?)/(?P<region>.*?)/(?P<module>.*)", abspath(get_terragrunt_dir()))
+  # abspath(get_original_terragrunt_dir()) should return something like <PATH>/live/<ENV>/<REGION>/<MODULE>. We use a regex to parse it.
+  parsed_path = regex("(?P<repo_root>.*?/live)/(?P<env>.*?)/(?P<region>.*?)/(?P<module>.*)", abspath(get_original_terragrunt_dir()))
+  repo_root   = local.parsed_path.repo_root
   env         = local.parsed_path.env
   region      = local.parsed_path.region
   module      = local.parsed_path.module
@@ -7,7 +9,7 @@ locals {
   source = "../../../..//modules/account-baseline-app"
 
   common        = read_terragrunt_config(find_in_parent_folders("common.hcl"))
-  accounts      = jsondecode(file("${get_terragrunt_dir()}/../../../root/_global/account-baseline/accounts.json"))
+  accounts      = jsondecode(file("${local.repo_root}/root/_global/account-baseline/accounts.json"))
 }
 
 inputs = {
