@@ -10,6 +10,9 @@ terraform {
   source = "${local.parsed_path.root_path}/modules//account-baseline-app"
 }
 
+generate     = local.common.locals.generate
+remote_state = local.common.locals.remote_state
+
 inputs = {
   name_prefix               = local.parsed_path.env
   cloudtrail_bucket_name    = local.common.locals.cloudtrail_bucket_name
