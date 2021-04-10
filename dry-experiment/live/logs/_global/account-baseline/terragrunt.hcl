@@ -2,9 +2,8 @@ terraform {
   source = "../../../..//modules/account-baseline-app"
 }
 
-include {
-  path = find_in_parent_folders()
-}
+generate     = local.common.locals.generate
+remote_state = local.common.locals.remote_state
 
 locals {
   common = read_terragrunt_config(find_in_parent_folders("common.hcl"))

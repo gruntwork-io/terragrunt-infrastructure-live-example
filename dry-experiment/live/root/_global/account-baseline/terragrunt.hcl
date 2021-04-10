@@ -2,13 +2,12 @@ terraform {
   source = "../../../..//modules/account-baseline-root"
 }
 
-include {
-  path = find_in_parent_folders()
-}
-
 locals {
   common = read_terragrunt_config(find_in_parent_folders("common.hcl"))
 }
+
+generate     = local.common.locals.generate
+remote_state = local.common.locals.remote_state
 
 inputs = {
   name_prefix = "root"

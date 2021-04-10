@@ -1,13 +1,3 @@
-locals {
-  module = read_terragrunt_config("../../../_env/vpc.hcl")
-}
-
-terraform {
-  source = local.module.locals.source
-}
-
 include {
-  path = find_in_parent_folders()
+  path = "../../../_env/vpc.hcl"
 }
-
-inputs = local.module.inputs
