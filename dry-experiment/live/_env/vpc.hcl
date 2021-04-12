@@ -22,8 +22,8 @@ terraform {
   source = "${local.parsed_path.root_path}/modules//vpc"
 }
 
-generate     = local.common.locals.generate
-remote_state = local.common.locals.remote_state
+generate     = local.common.generate
+remote_state = local.common.remote_state
 
 inputs = merge(
   {

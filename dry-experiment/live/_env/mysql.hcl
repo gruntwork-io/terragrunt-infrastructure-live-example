@@ -20,8 +20,8 @@ terraform {
   source = "${local.parsed_path.root_path}/modules//mysql"
 }
 
-generate     = local.common.locals.generate
-remote_state = local.common.locals.remote_state
+generate     = local.common.generate
+remote_state = local.common.remote_state
 
 dependency "vpc" {
   config_path = "${get_original_terragrunt_dir()}/../vpc"

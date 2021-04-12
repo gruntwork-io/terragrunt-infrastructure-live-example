@@ -10,8 +10,8 @@ terraform {
   source = "${local.parsed_path.root_path}/modules//account-baseline-app"
 }
 
-generate     = local.common.locals.generate
-remote_state = local.common.locals.remote_state
+generate     = local.common.generate
+remote_state = local.common.remote_state
 
 inputs = {
   name_prefix               = local.parsed_path.env
