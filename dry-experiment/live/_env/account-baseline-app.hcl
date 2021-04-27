@@ -6,13 +6,11 @@ locals {
   accounts    = jsondecode(file("${local.parsed_path.root_path}/live/root/_global/account-baseline/accounts.json"))
 }
 
-terraform {
-  source = "${local.parsed_path.root_path}/modules//account-baseline-app"
-}
-
 generate     = local.common.generate
 remote_state = local.common.remote_state
 
+# The default input variables that apply across all environments. Modules that include this one can add additional
+# variables or override these ones in their own inputs blocks.
 inputs = {
   name_prefix               = local.parsed_path.env
   cloudtrail_bucket_name    = local.common.locals.cloudtrail_bucket_name
