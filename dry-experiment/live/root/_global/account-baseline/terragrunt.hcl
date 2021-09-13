@@ -1,13 +1,11 @@
+include "root" {
+  path   = find_in_parent_folders("common.hcl")
+  expose = true
+}
+
 terraform {
   source = "../../../..//modules/account-baseline-root"
 }
-
-locals {
-  common = read_terragrunt_config(find_in_parent_folders("common.hcl"))
-}
-
-generate     = local.common.locals.generate
-remote_state = local.common.locals.remote_state
 
 inputs = {
   name_prefix = "root"
@@ -35,8 +33,8 @@ inputs = {
     }
   }
 
-  cloudtrail_bucket_name = local.common.locals.cloudtrail_bucket_name
-  config_bucket_name     = local.common.locals.config_bucket_name
+  cloudtrail_bucket_name = include.root.locals.cloudtrail_bucket_name
+  config_bucket_name     = include.root.locals.config_bucket_name
 
   accounts_json_path = "${get_terragrunt_dir()}/accounts.json"
 }

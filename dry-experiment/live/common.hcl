@@ -1,5 +1,5 @@
 locals {
-  name_prefix            = "acme-example"
+  name_prefix            = "yyacme-example"
   default_region         = "eu-west-1"
   cloudtrail_bucket_name = "${local.name_prefix}-config-bucket"
   config_bucket_name     = "${local.name_prefix}-cloudtrail-bucket"
@@ -7,6 +7,7 @@ locals {
   # abspath(get_original_terragrunt_dir()) should return something like <PATH>/live/<ENV>/<REGION>/<MODULE>. We use a
   # regex to parse it. You can then use the capture groups: e.g., local.parsed_path.region to get the current region.
   parsed_path = regex("(?P<root_path>.*?)/live/(?P<env>.*?)/(?P<region>.*?)/(?P<module>.*)", abspath(get_original_terragrunt_dir()))
+  accounts    = jsondecode(file("${local.parsed_path.root_path}/live/root/_global/account-baseline/accounts.json"))
 }
 
 # In real code, this would generate the "aws" provider block instead
