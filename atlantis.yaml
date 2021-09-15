@@ -1,8 +1,16 @@
 version: 3
 projects:
-- dir: live/staging
+- dir: non-prod/us-east-1/qa/mysql
   workflow: terragrunt
-- dir: live/prod
+- dir: non-prod/us-east-1/qa/webserver-cluster
+  workflow: terragrunt
+- dir: non-prod/us-east-1/stage/mysql
+  workflow: terragrunt
+- dir: non-prod/us-east-1/stage/webserver-cluster
+  workflow: terragrunt
+- dir: prod/us-east-1/prod/mysql
+  workflow: terragrunt
+- dir: prod/us-east-1/prod/webserver-cluster
   workflow: terragrunt
 workflows:
   terragrunt:
