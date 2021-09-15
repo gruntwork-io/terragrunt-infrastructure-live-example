@@ -9,7 +9,7 @@ locals {
 # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
 # working directory, into a temporary folder, and execute your Terraform commands in that folder.
 terraform {
-  source = "git::git@github.com:gruntwork-io/terragrunt-infrastructure-modules-example.git//mysql"
+  source = "../../../../../modules/asg-elb-service/"
 }
 
 # Include all settings from the root terragrunt.hcl file
@@ -19,13 +19,12 @@ include {
 
 # These are the variables we have to pass in to use the module specified in the terragrunt configuration above
 inputs = {
-  name           = "mysql_${local.env}"
-  instance_class = "db.t2.medium"
+  name          = "webserver-example-${local.env}"
+  instance_type = "t2.micro"
 
-  allocated_storage = 100
-  storage_type      = "standard"
+  min_size = 2
+  max_size = 2
 
-  master_username = "admin"
-  master_password = "foobarorba"
-  # TODO: To avoid storing your DB password in the code, set it as the environment variable TF_VAR_master_password
+  server_port = 8080
+  elb_port    = 80
 }
