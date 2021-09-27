@@ -1,30 +1,34 @@
-locals {
-  # Automatically load environment-level variables
-  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+# ---------------------------------------------------------------------------------------------------------------------
+# TERRAGRUNT CONFIGURATION
+# This is the configuration for Terragrunt, a thin wrapper for Terraform that helps keep your code DRY and
+# maintainable: https://github.com/gruntwork-io/terragrunt
+# ---------------------------------------------------------------------------------------------------------------------
 
-  # Extract out common variables for reuse
-  env = local.environment_vars.locals.environment
-}
-
-# Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
-# working directory, into a temporary folder, and execute your Terraform commands in that folder.
+# We override the terraform block source attribute here just for the QA environment to show how you would deploy a
+# different version of the module in a specific environment.
 terraform {
-  source = "git::git@github.com:gruntwork-io/terragrunt-infrastructure-modules-example.git//asg-elb-service?ref=v0.4.0"
+  source = "${include.envcommon.locals.base_source_url}?ref=v0.4.0"
 }
 
-# Include all settings from the root terragrunt.hcl file
-include {
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Include configurations that are common used across multiple environments.
+# ---------------------------------------------------------------------------------------------------------------------
+
+# Include the root `terragrunt.hcl` configuration. The root configuration contains settings that are common across all
+# components and environments, such as how to configure remote state.
+include "root" {
   path = find_in_parent_folders()
 }
 
-# These are the variables we have to pass in to use the module specified in the terragrunt configuration above
-inputs = {
-  name          = "webserver-example-${local.env}"
-  instance_type = "t2.micro"
-
-  min_size = 2
-  max_size = 2
-
-  server_port = 8080
-  elb_port    = 80
+# Include the envcommon configuration for the component. The envcommon configuration contains settings that are common
+# for the component across all environments.
+include "envcommon" {
+  path   = "${dirname(find_in_parent_folders())}/_envcommon/webserver-cluster.hcl"
+  expose = true
 }
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# We don't need to override any of the common parameters for this environment, so we don't specify any inputs.
+# ---------------------------------------------------------------------------------------------------------------------
