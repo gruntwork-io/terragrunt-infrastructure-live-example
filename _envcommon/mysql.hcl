@@ -10,7 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-  source = "${local.base_source_url}?ref=v0.4.0"
+  source = "${local.base_source_url}?ref=v0.7.0"
 }
 
 

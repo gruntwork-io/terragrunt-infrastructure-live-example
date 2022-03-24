@@ -7,7 +7,7 @@
 # We override the terraform block source attribute here just for the QA environment to show how you would deploy a
 # different version of the module in a specific environment.
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=v0.4.0"
+  source = "${include.envcommon.locals.base_source_url}?ref=v0.7.0"
 }
 
 
