@@ -139,6 +139,20 @@ Where:
   Scaling Groups, ECS Clusters, Databases, Load Balancers, and so on. Note that the Terraform code for most of these
   resources lives in the [terragrunt-infrastructure-modules-example repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example).
 
+## Multi-account set-up with assumed roles
+When you would like to make use of AWS assumed roles, you can use the `terragrunt-assumed-role.hcl` file and rename this to `terragrunt.hcl`.
+
+For this simple example to work, we assume that you have created your initial AWS account and created two sub-accounts, one for `non-prod` and one for `prod`
+and have filled in the account ids for these accounts in the `non-prod` and `prod` `account.hcl` files.
+
+When new sub-accounts are created, a default role will be created with the name `OrganizationAccountAccessRole`.
+You have to enable an AWS profile with administrator access and set the environment variable in your terminal.
+
+Before running the session, do the following to activate this profile: `export AWS_PROFILE=terragrunt`
+
+Now you can perform the same deployment steps as mentioned earlier.
+
+
 ## Creating and using root (account) level variables
 
 In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each
