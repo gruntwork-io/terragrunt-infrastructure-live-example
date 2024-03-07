@@ -5,13 +5,14 @@
 This repo, along with the [terragrunt-infrastructure-modules-example
 repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example), show an example file/folder structure
 you can use with [Terragrunt](https://github.com/gruntwork-io/terragrunt) to keep your
-[Terraform](https://www.terraform.io) code DRY. For background information, check out the [Keep your Terraform code
-DRY](https://github.com/gruntwork-io/terragrunt#keep-your-terraform-code-dry) section of the Terragrunt documentation.
+[Terraform](https://www.terraform.io) and [OpenTofu](https://opentofu.org/) code DRY. For background information, 
+check out the [Keep your code DRY](https://github.com/gruntwork-io/terragrunt#keep-your-terraform-code-dry) 
+section of the Terragrunt documentation.
 
 This repo shows an example of how to use the modules from the `terragrunt-infrastructure-modules-example` repo to
 deploy an Auto Scaling Group (ASG) and a MySQL DB across three environments (qa, stage, prod) and two AWS accounts
-(non-prod, prod), all without duplicating any of the Terraform code. That's because there is just a single copy of
-the Terraform code, defined in the `terragrunt-infrastructure-modules-example` repo, and in this repo, we solely define
+(non-prod, prod), all with minimal duplication of code. That's because there is just a single copy of
+the code, defined in the `terragrunt-infrastructure-modules-example` repo, and in this repo, we solely define
 `terragrunt.hcl` files that reference that code (at a specific version, too!) and fill in variables specific to each
 environment.
 
@@ -30,15 +31,15 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 ### Pre-requisites
 
-1. Install [Terraform](https://www.terraform.io/) version `1.1.4` and
+1. Install [OpenTofu](https://opentofu.org/) version `1.6.0` or newer and
    [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.36.0` or newer.
 1. Update the `bucket` parameter in the root `terragrunt.hcl`. We use S3 [as a Terraform
-   backend](https://www.terraform.io/docs/backends/types/s3.html) to store your
-   Terraform state, and S3 bucket names must be globally unique. The name currently in
+   backend](https://opentofu.org/docs/language/settings/backends/s3/) to store your
+   state, and S3 bucket names must be globally unique. The name currently in
    the file is already taken, so you'll have to specify your own. Alternatives, you can
    set the environment variable `TG_BUCKET_PREFIX` to set a custom prefix.
 1. Configure your AWS credentials using one of the supported [authentication
-   mechanisms](https://www.terraform.io/docs/providers/aws/#authentication).
+   mechanisms](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 1. Fill in your AWS Account ID's in `prod/account.hcl` and `non-prod/account.hcl`.
 
 
@@ -55,8 +56,8 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 1. `cd` into the region folder (e.g. `cd non-prod/us-east-1`).
 1. Configure the password for the MySQL DB as an environment variable: `export TF_VAR_master_password=(...)`.
-1. Run `terragrunt plan-all` to see all the changes you're about to apply.
-1. If the plan looks good, run `terragrunt apply-all`.
+1. Run `terragrunt run-all plan` to see all the changes you're about to apply.
+1. If the plan looks good, run `terragrunt run-all apply`.
 
 
 ### Testing the infrastructure after it's deployed
@@ -88,15 +89,15 @@ Similarly, the MySQL module produces outputs that will look something like this:
 ```
 Outputs:
 
-arn = arn:aws:rds:us-east-1:1234567890:db:terraform-00d7a11c1e02cf617f80bbe301
+arn = arn:aws:rds:us-east-1:1234567890:db:tofu-00d7a11c1e02cf617f80bbe301
 db_name = mysql_prod
-endpoint = terraform-1234567890.abcdefghijklmonp.us-east-1.rds.amazonaws.com:3306
+endpoint = tofu-1234567890.abcdefghijklmonp.us-east-1.rds.amazonaws.com:3306
 ```
 
 You can use the `endpoint` and `db_name` outputs with any MySQL client:
 
 ```
-mysql --host=terraform-1234567890.abcdefghijklmonp.us-east-1.rds.amazonaws.com:3306 --user=admin --password mysql_prod
+mysql --host=tofu-1234567890.abcdefghijklmonp.us-east-1.rds.amazonaws.com:3306 --user=admin --password mysql_prod
 ```
 
 
@@ -136,7 +137,7 @@ Where:
   SNS topics, and ECR repos.
 
 * **Resource**: Within each environment, you deploy all the resources for that environment, such as EC2 Instances, Auto
-  Scaling Groups, ECS Clusters, Databases, Load Balancers, and so on. Note that the Terraform code for most of these
+  Scaling Groups, ECS Clusters, Databases, Load Balancers, and so on. Note that the code for most of these
   resources lives in the [terragrunt-infrastructure-modules-example repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example).
 
 ## Creating and using root (account) level variables
