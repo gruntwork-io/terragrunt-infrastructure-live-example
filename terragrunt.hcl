@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # TERRAGRUNT CONFIGURATION
-# Terragrunt is a thin wrapper for Terraform that provides extra tools for working with multiple Terraform modules,
+# Terragrunt is a thin wrapper for Terraform/OpenTofu that provides extra tools for working with multiple modules,
 # remote state, and locking: https://github.com/gruntwork-io/terragrunt
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -39,10 +39,10 @@ remote_state {
   backend = "s3"
   config = {
     encrypt        = true
-    bucket         = "${get_env("TG_BUCKET_PREFIX", "")}terragrunt-example-terraform-state-${local.account_name}-${local.aws_region}"
-    key            = "${path_relative_to_include()}/terraform.tfstate"
+    bucket         = "${get_env("TG_BUCKET_PREFIX", "")}terragrunt-example-tf-state-${local.account_name}-${local.aws_region}"
+    key            = "${path_relative_to_include()}/tf.tfstate"
     region         = local.aws_region
-    dynamodb_table = "terraform-locks"
+    dynamodb_table = "tf-locks"
   }
   generate = {
     path      = "backend.tf"
@@ -50,6 +50,14 @@ remote_state {
   }
 }
 
+# Configure what repos to search when you run 'terragrunt catalog'
+catalog {
+  urls = [
+    "https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example",
+    "https://github.com/gruntwork-io/terraform-aws-utilities",
+    "https://github.com/gruntwork-io/terraform-kubernetes-namespace"
+  ]
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # GLOBAL PARAMETERS
