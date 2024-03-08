@@ -33,14 +33,16 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 1. Install [OpenTofu](https://opentofu.org/) version `1.6.0` or newer and
    [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.36.0` or newer.
-1. Update the `bucket` parameter in the root `terragrunt.hcl`. We use S3 [as a Terraform
+2. Update the `bucket` parameter in the root `terragrunt.hcl`. We use S3 [as a Terraform
    backend](https://opentofu.org/docs/language/settings/backends/s3/) to store your
    state, and S3 bucket names must be globally unique. The name currently in
    the file is already taken, so you'll have to specify your own. Alternatives, you can
    set the environment variable `TG_BUCKET_PREFIX` to set a custom prefix.
-1. Configure your AWS credentials using one of the supported [authentication
+3. Update the `account_name` and `aws_account_id` parameters in [`non-prod/account.hcl`](/non-prod/account.hcl) and
+   [`prod/account.hcl`](/prod/account.hcl) with the names and IDs of accounts you want to use for non production and 
+   production workloads, respectively.
+4. Configure your AWS credentials using one of the supported [authentication
    mechanisms](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
-1. Fill in your AWS Account ID's in `prod/account.hcl` and `non-prod/account.hcl`.
 
 
 ### Deploying a single module
