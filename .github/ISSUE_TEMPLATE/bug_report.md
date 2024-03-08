@@ -16,7 +16,7 @@ or ask in this issue and a Gruntwork core maintainer will be happy to help :)
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-Steps to reproduce the behavior including the relevant Terraform/Terragrunt/Packer version number and any code snippets and module inputs you used.
+Steps to reproduce the behavior including the relevant Terraform/OpenTofu/Terragrunt/Packer version number and any code snippets and module inputs you used.
 
 ```hcl
 // paste code snippets here
