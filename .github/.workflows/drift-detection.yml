@@ -1,0 +1,65 @@
+name: Scheduled Terraform Drift Detection
+
+on:
+  schedule:
+    # Run the drift detection every 6 hours
+    - cron: '0 */6 * * *'
+
+jobs:
+  drift-detection:
+    name: Check Drift
+
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+      ### Check out the code
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      ### Install tooling
+
+      - name: Install Terramate
+        uses: terramate-io/terramate-action@v1
+
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@v3
+
+      - name: Install Terraform with asdf
+        run: |
+          asdf plugin add terraform
+          asdf install terraform
+
+      ### Configure cloud credentials
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+        env:
+          AWS_REGION: us-east-1
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Verify AWS credentials
+        run: aws sts get-caller-identity
+
+      ### Run Dift Check
+
+      - name: Run Terraform init on all stacks
+        id: init
+        run: terramate run -C prod -- terraform init
+
+      - name: Run drift detection
+        id: drift
+        run: terramate run -C prod --cloud-sync-drift-status --cloud-sync-terraform-plan-file=drift.tfplan --continue-on-error -- terraform plan -out drift.tfplan -detailed-exitcode -lock=false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

@@ -31,6 +31,6 @@ terraform {
 # For production, we want to specify bigger instance classes and storage, so we specify override parameters here. These
 # inputs get merged with the common inputs from the root and the envcommon terragrunt.hcl
 inputs = {
-  instance_class    = "db.t2.medium"
+  instance_class    = "db.m5d.large"
   allocated_storage = 100
 }
