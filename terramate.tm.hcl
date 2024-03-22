@@ -9,6 +9,12 @@ terramate {
       "terragrunt",
     ]
 
+    run {
+      env {
+        TG_BUCKET_PREFIX = "tmcd-"
+      }
+    }
+
     git {
       # Git configuration
       default_remote = "origin"
