@@ -1,4 +1,4 @@
-name: Scheduled Terraform Drift Detection
+name: Scheduled Terragrunt Drift Detection
 
 on:
   schedule:
@@ -33,10 +33,12 @@ jobs:
       - name: Install asdf
         uses: asdf-vm/actions/setup@v3
 
-      - name: Install Terraform with asdf
+      - name: Install Terraform and Terragrunt with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add terragrunt
           asdf install terraform
+          asdf install terragrunt
 
       ### Configure cloud credentials
 
@@ -54,12 +56,12 @@ jobs:
 
       ### Run Dift Check
 
-      - name: Run Terraform init on all stacks
+      - name: Run Terragrunt init on all stacks
         id: init
-        run: terramate run -C prod -- terraform init
+        run: terramate run -C prod -- terragrunt init
 
       - name: Run drift detection
         id: drift
-        run: terramate run -C prod --cloud-sync-drift-status --cloud-sync-terraform-plan-file=drift.tfplan --continue-on-error -- terraform plan -out drift.tfplan -detailed-exitcode -lock=false
+        run: terramate run -C prod --cloud-sync-drift-status --cloud-sync-terraform-plan-file=drift.tfplan --continue-on-error -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
         env:
           GITHUB_TOKEN: ${{ github.token }}
