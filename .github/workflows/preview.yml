@@ -92,6 +92,7 @@ jobs:
           terramate run -C prod --parallel 5 --changed --cloud-sync-preview --cloud-sync-terraform-plan-file=out.tfplan --debug-preview-url preview_url.txt --continue-on-error -- terragrunt plan -out out.tfplan -detailed-exitcode -lock=false
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       ### Update Pull Request comment
 
@@ -116,6 +117,8 @@ jobs:
           [ "${PIPESTATUS[0]}" == "141" ] && sed -i 's/#### Terragrunt Plan/#### :warning: Terragrunt Plan truncated: please check console output :warning:/' pr-comment.txt
           echo >>pr-comment.txt '```'
           cat pr-comment.txt >>$GITHUB_STEP_SUMMARY
+        env:
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       - name: Generate preview when no stacks changed
         if: success() && !steps.list.outputs.stdout
