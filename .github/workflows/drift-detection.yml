@@ -62,12 +62,13 @@ jobs:
 
       - name: Run drift detection
         id: drift
-        run: terramate run -C prod \
-          --cloud-sync-drift-status \
-          --cloud-sync-terraform-plan-file=drift.tfplan \
-          --continue-on-error \
-          --terragrunt \
-          -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
+        run: |
+          terramate run -C prod \
+            --cloud-sync-drift-status \
+            --cloud-sync-terraform-plan-file=drift.tfplan \
+            --continue-on-error \
+            --terragrunt \
+            -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
