@@ -92,12 +92,12 @@ jobs:
           terramate run -C prod \
             --parallel 5 \
             --changed \
-            --eval \
             --cloud-sync-preview \
             --cloud-sync-terraform-plan-file=out.tfplan \
             --debug-preview-url preview_url.txt \
             --continue-on-error \
-            -- terragrunt plan -out "\${terramate.root.path.fs.absolute}/\${terramate.stack.path.relative}/out.tfplan" \
+            --terragrunt \
+            -- terragrunt plan -out out.tfplan \
             -detailed-exitcode \
             -lock=false
         env:
@@ -125,8 +125,8 @@ jobs:
           echo >>pr-comment.txt '```terraform'
           terramate run -C prod \
             --changed \
-            --eval \
-            -- terragrunt show -no-color "\${terramate.root.path.fs.absolute}/\${terramate.stack.path.relative}/out.tfplan" \
+            --terragrunt \
+            -- terragrunt show -no-color out.tfplan \
             |& dd bs=1024 count=248 >>pr-comment.txt
           [ "${PIPESTATUS[0]}" == "141" ] && sed -i 's/#### Terragrunt Plan/#### :warning: Terragrunt Plan truncated: please check console output :warning:/' pr-comment.txt
           echo >>pr-comment.txt '```'

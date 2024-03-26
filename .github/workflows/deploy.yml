@@ -80,14 +80,24 @@ jobs:
       - name: Apply planned changes on changed stacks
         id: apply
         if: steps.list.outputs.stdout
-        run: terramate run -C prod --changed --cloud-sync-deployment --cloud-sync-terraform-plan-file=.terragrunt-cache/out.tfplan -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
+        run: terramate run -C prod \
+          --changed \
+          --cloud-sync-deployment \
+          --cloud-sync-terraform-plan-file=out.tfplan \
+          --terragrunt \
+          -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       - name: Run drift detection
         if: steps.list.outputs.stdout && ! cancelled() && steps.apply.outcome != 'skipped'
-        run: terramate run -C prod --changed --cloud-sync-drift-status --cloud-sync-terraform-plan-file=.terragrunt-cache/drift.tfplan -- terragrunt plan -out drift.tfplan -detailed-exitcode
+        run: terramate run -C prod \
+          --changed \
+          --cloud-sync-drift-status \
+          --cloud-sync-terraform-plan-file=drift.tfplan \
+          --terragrunt \
+          -- terragrunt plan -out drift.tfplan -detailed-exitcode
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
