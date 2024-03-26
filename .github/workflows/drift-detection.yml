@@ -3,7 +3,7 @@ name: Scheduled Terragrunt Drift Detection
 on:
   schedule:
     # Run the drift detection every 6 hours
-    - cron: '*/5 * * * * '
+    - cron: '0 */6 * * *'
 
 jobs:
   drift-detection:
