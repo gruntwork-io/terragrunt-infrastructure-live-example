@@ -14,7 +14,7 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the source URL in the child terragrunt configurations.
-  base_source_url = "git::git@github.com:gruntwork-io/terragrunt-infrastructure-modules-example.git//modules/mysql"
+  base_source_url = "git::https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example.git//modules/mysql"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ locals {
 inputs = {
   name              = "mysql_${local.env}"
   instance_class    = "db-f1-micro"
-  allocated_storage = 20
+  allocated_storage = 30
   storage_type      = "standard"
   master_username   = "admin"
 

@@ -1,4 +1,4 @@
-name: Terraform Preview
+name: Terragrunt Preview
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   preview:
-    name: Plan Terraform changes in changed Terramate stacks
+    name: Plan Terragrunt changes in changed Terramate stacks
     runs-on: ubuntu-latest
 
     permissions:
@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           header: preview
           message: |
-            ## Preview of Terraform changes in ${{ github.event.pull_request.head.sha }}
+            ## Preview of Terragrunt changes in ${{ github.event.pull_request.head.sha }}
 
             :warning: preview is being created... please stand by!
 
@@ -46,18 +46,17 @@ jobs:
       - name: Install asdf
         uses: asdf-vm/actions/setup@v3
 
-      - name: Install Terraform with asdf
+      - name: Install Terraform and Terragrunt with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add terragrunt
           asdf install terraform
+          asdf install terragrunt
 
       ### Linting
 
       - name: Check Terramate formatting
         run: terramate fmt --check
-
-      - name: Check Terraform formatting
-        run: terraform fmt -recursive -check -diff
 
       ### Check for changed stacks
 
@@ -81,22 +80,29 @@ jobs:
         if: steps.list.outputs.stdout
         run: aws sts get-caller-identity
 
-      ### Run the Terraform preview via Terramate in each changed stack
+      ### Run the Terragrunt preview via Terramate in each changed stack
 
-      - name: Initialize Terraform in changed stacks
+      - name: Initialize Terragrunt in changed stacks
         if: steps.list.outputs.stdout
-        run: terramate run -C prod --parallel 1 --changed -- terraform init -lock-timeout=5m
+        run: terramate run -C prod --parallel 1 --changed -- terragrunt init -lock-timeout=5m
 
-      - name: Validate Terraform configuration in changed stacks
-        if: steps.list.outputs.stdout
-        run: terramate run -C prod --parallel 5  --changed -- terraform validate
-
-      - name: Plan Terraform changes in changed stacks
+      - name: Plan Terragrunt changes in changed stacks
         if: steps.list.outputs.stdout
         run: |
-          terramate run -C prod --parallel 5 --changed --cloud-sync-preview --cloud-sync-terraform-plan-file=out.tfplan --debug-preview-url preview_url.txt --continue-on-error -- terraform plan -out out.tfplan -detailed-exitcode -lock=false
+          terramate run -C prod \
+            --parallel 5 \
+            --changed \
+            --cloud-sync-preview \
+            --cloud-sync-terraform-plan-file=out.tfplan \
+            --debug-preview-url preview_url.txt \
+            --continue-on-error \
+            --terragrunt \
+            -- terragrunt plan -out out.tfplan \
+            -detailed-exitcode \
+            -lock=false
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       ### Update Pull Request comment
 
@@ -104,7 +110,7 @@ jobs:
         if: steps.list.outputs.stdout
         id: comment
         run: |
-          echo >>pr-comment.txt "## Preview of Terraform changes in ${{ github.event.pull_request.head.sha }}"
+          echo >>pr-comment.txt "## Preview of Terragrunt changes in ${{ github.event.pull_request.head.sha }}"
           echo >>pr-comment.txt
           echo >>pr-comment.txt "[:mag: View Details on Terramate Cloud]($(cat prod/preview_url.txt))"
           echo >>pr-comment.txt
@@ -114,18 +120,24 @@ jobs:
           echo >>pr-comment.txt "${{ steps.list.outputs.stdout }}"
           echo >>pr-comment.txt '```'
           echo >>pr-comment.txt
-          echo >>pr-comment.txt "#### Terraform Plan"
+          echo >>pr-comment.txt "#### Terragrunt Plan"
           echo >>pr-comment.txt
           echo >>pr-comment.txt '```terraform'
-          terramate run -C prod --changed -- terraform show -no-color out.tfplan |& dd bs=1024 count=248 >>pr-comment.txt
-          [ "${PIPESTATUS[0]}" == "141" ] && sed -i 's/#### Terraform Plan/#### :warning: Terraform Plan truncated: please check console output :warning:/' pr-comment.txt
+          terramate run -C prod \
+            --changed \
+            --terragrunt \
+            -- terragrunt show -no-color out.tfplan \
+            |& dd bs=1024 count=248 >>pr-comment.txt
+          [ "${PIPESTATUS[0]}" == "141" ] && sed -i 's/#### Terragrunt Plan/#### :warning: Terragrunt Plan truncated: please check console output :warning:/' pr-comment.txt
           echo >>pr-comment.txt '```'
           cat pr-comment.txt >>$GITHUB_STEP_SUMMARY
+        env:
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       - name: Generate preview when no stacks changed
         if: success() && !steps.list.outputs.stdout
         run: |
-          echo >>pr-comment.txt "## Preview of Terraform changes in ${{ github.event.pull_request.head.sha }}"
+          echo >>pr-comment.txt "## Preview of Terragrunt changes in ${{ github.event.pull_request.head.sha }}"
           echo >>pr-comment.txt
           echo >>pr-comment.txt "### Changed Stacks"
           echo >>pr-comment.txt
@@ -135,7 +147,7 @@ jobs:
       - name: Generate preview when things failed
         if: failure()
         run: |
-          echo >>pr-comment.txt "## Preview of Terraform changes in ${{ github.event.pull_request.head.sha }}"
+          echo >>pr-comment.txt "## Preview of Terragrunt changes in ${{ github.event.pull_request.head.sha }}"
           echo >>pr-comment.txt
           echo >>pr-comment.txt "[:mag: View Details on Terramate Cloud]($(cat prod/preview_url.txt))"
           echo >>pr-comment.txt

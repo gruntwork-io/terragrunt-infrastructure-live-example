@@ -1,4 +1,4 @@
-name: Terraform Deployment
+name: Terragrunt Deployment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Terraform changes in changed Terramate stacks
+    name: Deploy Terragrunt changes in changed Terramate stacks
 
     permissions:
       id-token: write
@@ -32,10 +32,12 @@ jobs:
       - name: Install asdf
         uses: asdf-vm/actions/setup@v3
 
-      - name: Install Terraform with asdf
+      - name: Install Terraform and Terragrunt with asdf
         run: |
           asdf plugin add terraform
+          asdf plugin add terragrunt
           asdf install terraform
+          asdf install terragrunt
 
       ### Check for changed stacks
 
@@ -59,28 +61,44 @@ jobs:
         if: steps.list.outputs.stdout
         run: aws sts get-caller-identity
 
-      ### Run the Terraform deployment via Terramate in each changed stack
+      ### Run the Terragrunt deployment via Terramate in each changed stack
 
-      - name: Run Terraform init on changed stacks
+      - name: Run Terragrunt init on changed stacks
         if: steps.list.outputs.stdout
         id: init
         run: |
-          terramate run -C prod --changed -- terraform init
+          terramate run -C prod --changed -- terragrunt init
 
-      - name: Create Terraform plan on changed stacks
+      - name: Create Terragrunt plan on changed stacks
         if: steps.list.outputs.stdout
         id: plan
-        run: terramate run -C prod --changed -- terraform plan -lock-timeout=5m -out out.tfplan
+        run: terramate run -C prod --changed -- terragrunt plan -lock-timeout=5m -out out.tfplan
+        env:
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
+
 
       - name: Apply planned changes on changed stacks
         id: apply
         if: steps.list.outputs.stdout
-        run: terramate run -C prod --changed --cloud-sync-deployment --cloud-sync-terraform-plan-file=out.tfplan -- terraform apply -input=false -auto-approve -lock-timeout=5m out.tfplan
+        run: terramate run -C prod \
+          --changed \
+          --cloud-sync-deployment \
+          --cloud-sync-terraform-plan-file=out.tfplan \
+          --terragrunt \
+          -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       - name: Run drift detection
         if: steps.list.outputs.stdout && ! cancelled() && steps.apply.outcome != 'skipped'
-        run: terramate run -C prod --changed --cloud-sync-drift-status --cloud-sync-terraform-plan-file=drift.tfplan -- terraform plan -out drift.tfplan -detailed-exitcode
+        run: terramate run -C prod \
+          --changed \
+          --cloud-sync-drift-status \
+          --cloud-sync-terraform-plan-file=drift.tfplan \
+          --terragrunt \
+          -- terragrunt plan -out drift.tfplan -detailed-exitcode
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
+          
