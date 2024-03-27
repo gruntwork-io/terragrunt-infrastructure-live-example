@@ -32,5 +32,5 @@ terraform {
 # inputs get merged with the common inputs from the root and the envcommon terragrunt.hcl
 inputs = {
   instance_class    = "db.m5d.large"
-  allocated_storage = 100
+  allocated_storage = 120
 }
