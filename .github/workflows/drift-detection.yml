@@ -1,4 +1,4 @@
-name: Scheduled Terragrunt Drift Detection
+name: Terragrunt Drift Detection and Reconciliation
 
 on:
   schedule:
@@ -70,30 +70,6 @@ jobs:
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
 
-      ### Add manual approval step for drift reconciliation (removed if you want to reconcile automatically)
-
-      - name: Wait for approval
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.token }}
-          approvers: terramate-io/engineering # Add approvers (users and teams) here
-          issue-title: "Recommendation: Drift Reconciliation"
-          minimum-approvals: 1
-
-      - name: Run drift reconciliation
-        id: drift-reconcile
-        run: |
-          terramate run -C prod \
-            --changed \
-            --cloud-sync-deployment \
-            --cloud-sync-terraform-plan-file=out.tfplan \
-            --terragrunt \
-            --cloud-status=drifted \
-            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
-
       ### Optionally add a manual approval step for drift reconciliation (removed if you want to reconcile automatically)
       # - name: Wait for approval
       #   uses: trstringer/manual-approval@v1
@@ -103,6 +79,7 @@ jobs:
       #     issue-title: "Recommendation: Drift Reconciliation"
       #     minimum-approvals: 1
 
+      # Run terragrunt apply on all stacks tagged with 'reconcile'
       - name: Run drift reconciliation
         id: drift-reconcile
         run: |
@@ -112,6 +89,7 @@ jobs:
             --cloud-sync-terraform-plan-file=out.tfplan \
             --terragrunt \
             --cloud-status=drifted \
+            --tags reconcile \
             -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           GITHUB_TOKEN: ${{ github.token }}
