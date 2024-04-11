@@ -24,7 +24,7 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 inputs = {
   name              = "mysql_${local.env}"
-  instance_class    = "db-f1-micro"
+  instance_class    = "db.t3.micro"
   allocated_storage = 30
   storage_type      = "standard"
   master_username   = "admin"
