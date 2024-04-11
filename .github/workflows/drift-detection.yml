@@ -10,6 +10,9 @@ jobs:
   drift-detection:
     name: Check Drift
 
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
     permissions:
       id-token: write
       contents: read
@@ -70,6 +73,8 @@ jobs:
             --continue-on-error \
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
+        env:
+          TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       ### Optionally add a manual approval step for drift reconciliation (removed if you want to reconcile automatically)
       # - name: Wait for approval
@@ -92,5 +97,4 @@ jobs:
             --cloud-status=drifted \
             -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
