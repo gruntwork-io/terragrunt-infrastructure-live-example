@@ -58,12 +58,12 @@ jobs:
 
       - name: Run Terragrunt init on all stacks
         id: init
-        run: terramate run -C prod -- terragrunt init
+        run: terramate run -- terragrunt init
 
       - name: Run drift detection
         id: drift
         run: |
-          terramate run -C prod \
+          terramate run \
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --continue-on-error \
