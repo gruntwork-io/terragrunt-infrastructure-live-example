@@ -43,7 +43,7 @@ jobs:
 
       - name: List changed stacks
         id: list
-        run: terramate list -C prod --changed
+        run: terramate list --changed
 
       ### Configure cloud credentials
 
@@ -67,12 +67,12 @@ jobs:
         if: steps.list.outputs.stdout
         id: init
         run: |
-          terramate run -C prod --changed -- terragrunt init
+          terramate run --changed -- terragrunt init
 
       - name: Create Terragrunt plan on changed stacks
         if: steps.list.outputs.stdout
         id: plan
-        run: terramate run -C prod --changed -- terragrunt plan -lock-timeout=5m -out out.tfplan
+        run: terramate run --changed -- terragrunt plan -lock-timeout=5m -out out.tfplan
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
@@ -81,7 +81,7 @@ jobs:
         id: apply
         if: steps.list.outputs.stdout
         run: |
-          terramate run -C prod \
+          terramate run \
             --changed \
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=out.tfplan \
@@ -94,7 +94,7 @@ jobs:
       - name: Run drift detection
         if: steps.list.outputs.stdout && ! cancelled() && steps.apply.outcome != 'skipped'
         run: |
-          terramate run -C prod \
+          terramate run \
             --changed \
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \

@@ -62,7 +62,7 @@ jobs:
 
       - name: List changed stacks
         id: list
-        run: terramate list -C prod --changed
+        run: terramate list --changed
 
       ### Configure cloud credentials
 
@@ -84,12 +84,12 @@ jobs:
 
       - name: Initialize Terragrunt in changed stacks
         if: steps.list.outputs.stdout
-        run: terramate run -C prod --parallel 1 --changed -- terragrunt init -lock-timeout=5m
+        run: terramate run --parallel 1 --changed -- terragrunt init -lock-timeout=5m
 
       - name: Plan Terragrunt changes in changed stacks
         if: steps.list.outputs.stdout
         run: |
-          terramate run -C prod \
+          terramate run \
             --parallel 5 \
             --changed \
             --cloud-sync-preview \
@@ -123,7 +123,7 @@ jobs:
           echo >>pr-comment.txt "#### Terragrunt Plan"
           echo >>pr-comment.txt
           echo >>pr-comment.txt '```terraform'
-          terramate run -C prod \
+          terramate run \
             --changed \
             --terragrunt \
             -- terragrunt show -no-color out.tfplan \

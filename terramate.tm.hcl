@@ -19,7 +19,7 @@ terramate {
       # Git configuration
       default_remote = "origin"
 
-      # Safeguard
+      # Safeguards
       check_untracked   = false
       check_uncommitted = false
       check_remote      = false
