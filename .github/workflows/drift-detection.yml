@@ -90,7 +90,6 @@ jobs:
         id: drift-reconcile
         run: |
           terramate run \
-            --changed \
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=out.tfplan \
             --terragrunt \
