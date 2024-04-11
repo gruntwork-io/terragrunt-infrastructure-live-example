@@ -3,7 +3,8 @@ name: Terragrunt Drift Detection and Reconciliation
 on:
   schedule:
     # Run the drift detection every 6 hours
-    - cron: '0 */10 * * *'
+    # - cron: '0 */6 * * *'
+    - cron: '*/10 * * * *'
 
 jobs:
   drift-detection:
@@ -89,7 +90,6 @@ jobs:
             --cloud-sync-terraform-plan-file=out.tfplan \
             --terragrunt \
             --cloud-status=drifted \
-            --tags reconcile \
             -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           GITHUB_TOKEN: ${{ github.token }}
