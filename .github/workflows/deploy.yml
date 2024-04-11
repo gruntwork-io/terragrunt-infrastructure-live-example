@@ -9,6 +9,9 @@ jobs:
   deploy:
     name: Deploy Terragrunt changes in changed Terramate stacks
 
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
     permissions:
       id-token: write
       contents: read
@@ -88,7 +91,6 @@ jobs:
             --terragrunt \
             -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
       - name: Run drift detection
@@ -101,6 +103,5 @@ jobs:
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
           
