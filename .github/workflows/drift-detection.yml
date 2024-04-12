@@ -92,8 +92,8 @@ jobs:
           terramate run \
             --cloud-status=drifted \
             --cloud-sync-deployment \
-            --cloud-sync-terraform-plan-file=out.tfplan \
+            --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
-            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
+            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m drift.tfplan
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
