@@ -25,7 +25,7 @@ locals {
 inputs = {
   name              = "mysql_${local.env}"
   instance_class    = "db.t3.micro"
-  allocated_storage = 30
+  allocated_storage = 40
   storage_type      = "standard"
   master_username   = "admin"
 
