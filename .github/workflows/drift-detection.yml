@@ -89,6 +89,7 @@ jobs:
         run: |
           terramate run \
             --cloud-status=drifted \
+            --tags reconcile,
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
