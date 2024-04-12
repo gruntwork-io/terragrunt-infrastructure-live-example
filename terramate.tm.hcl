@@ -15,14 +15,14 @@ terramate {
       }
     }
 
-    git {
-      # Git configuration
-      default_remote = "origin"
+    # git {
+    #   # Git configuration
+    #   default_remote = "origin"
 
-      # Safeguards
-      check_untracked   = false
-      check_uncommitted = false
-      check_remote      = false
-    }
+    #   # Safeguards
+    #   check_untracked   = false
+    #   check_uncommitted = false
+    #   check_remote      = false
+    # }
   }
 }
