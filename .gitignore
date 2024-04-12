@@ -20,3 +20,13 @@
 build/
 */build/
 out/
+
+# https://github.com/google-github-actions/auth
+gha-creds-*.json
+
+# ignore all tf plan files from CI/CD
+*.tfplan
+pr-comment.txt
+
+# temp
+preview_url.txt
