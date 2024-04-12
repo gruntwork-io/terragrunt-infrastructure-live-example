@@ -86,21 +86,14 @@ jobs:
       #     minimum-approvals: 1
 
       # Run terragrunt apply on all stacks tagged with 'reconcile'
-      - name: Create Terragrunt plan for all drifted stacks
+
+      - name: Run Drift Reconciliation
         run: |
           terramate run \
-            --parallel 5 \
             --cloud-status=drifted \
-            -- terragrunt plan -lock-timeout=5m -out out.tfplan
-
-      - name: Run Terragrunt apply on all drifted stacks
-        run: |
-          terramate run \
-          --cloud-sync-deployment \
-          --cloud-sync-terraform-plan-file=out.tfplan \
-          --terragrunt \
-          --cloud-status=drifted \
-          -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
-
+            --cloud-sync-deployment \
+            --cloud-sync-terraform-plan-file=out.tfplan \
+            --terragrunt \
+            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
