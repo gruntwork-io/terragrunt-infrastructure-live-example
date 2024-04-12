@@ -70,7 +70,6 @@ jobs:
           terramate run \
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \
-            --continue-on-error \
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
         env:
