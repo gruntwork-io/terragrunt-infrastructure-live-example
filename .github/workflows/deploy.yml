@@ -16,6 +16,7 @@ jobs:
       id-token: write
       contents: read
       pull-requests: read
+      checks: read
 
     runs-on: ubuntu-latest
 
@@ -89,7 +90,8 @@ jobs:
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=out.tfplan \
             --terragrunt \
-            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
+            -- \
+            terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
 
@@ -101,7 +103,8 @@ jobs:
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
-            -- terragrunt plan -out drift.tfplan -detailed-exitcode
+            -- \
+            terragrunt plan -out drift.tfplan -detailed-exitcode
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
           
