@@ -99,7 +99,8 @@ jobs:
             --debug-preview-url preview_url.txt \
             --continue-on-error \
             --terragrunt \
-            -- terragrunt plan -out out.tfplan \
+            -- \
+            terragrunt plan -out out.tfplan \
             -detailed-exitcode \
             -lock=false
         env:
@@ -127,7 +128,8 @@ jobs:
           terramate run \
             --changed \
             --terragrunt \
-            -- terragrunt show -no-color out.tfplan \
+            -- \
+            terragrunt show -no-color out.tfplan \
             |& dd bs=1024 count=248 >>pr-comment.txt
           [ "${PIPESTATUS[0]}" == "141" ] && sed -i 's/#### Terragrunt Plan/#### :warning: Terragrunt Plan truncated: please check console output :warning:/' pr-comment.txt
           echo >>pr-comment.txt '```'

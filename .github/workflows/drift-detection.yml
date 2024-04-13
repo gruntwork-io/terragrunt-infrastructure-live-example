@@ -16,6 +16,7 @@ jobs:
       id-token: write
       contents: read
       pull-requests: read
+      checks: read
 
     runs-on: ubuntu-latest
 
@@ -67,6 +68,7 @@ jobs:
         id: drift-detect
         run: |
           terramate run \
+            --parallel 5
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
@@ -93,6 +95,7 @@ jobs:
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
-            -- terragrunt apply -input=false -auto-approve -lock-timeout=5m drift.tfplan
+            -- \
+            terragrunt apply -input=false -auto-approve -lock-timeout=5m drift.tfplan
         env:
           TF_VAR_master_password: ${{ secrets.MYSQL_PROD_MASTER_PASSWORD }}
