@@ -5,10 +5,6 @@ terramate {
       organization = "terramate-demo"
     }
 
-    experiments = [
-      "terragrunt",
-    ]
-
     run {
       env {
         TG_BUCKET_PREFIX = "tmcd-"
