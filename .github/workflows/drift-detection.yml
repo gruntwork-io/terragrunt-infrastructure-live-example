@@ -68,7 +68,7 @@ jobs:
         id: drift-detect
         run: |
           terramate run \
-            --parallel 5
+            --parallel 5 \
             --cloud-sync-drift-status \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
