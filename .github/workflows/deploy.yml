@@ -87,8 +87,8 @@ jobs:
         run: |
           terramate run \
             --changed \
-            --sync-deployment \
-            --sync-terraform-plan-file=out.tfplan \
+            --cloud-sync-deployment \
+            --terraform-plan-file=out.tfplan \
             --terragrunt \
             -- \
             terragrunt apply -input=false -auto-approve -lock-timeout=5m out.tfplan
@@ -100,8 +100,8 @@ jobs:
         run: |
           terramate run \
             --changed \
-            --sync-drift-status \
-            --sync-terraform-plan-file=drift.tfplan \
+            --cloud-sync-drift-status \
+            --terraform-plan-file=drift.tfplan \
             --terragrunt \
             -- \
             terragrunt plan -out drift.tfplan -detailed-exitcode

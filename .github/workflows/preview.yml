@@ -95,7 +95,7 @@ jobs:
             --parallel 5 \
             --changed \
             --sync-preview \
-            --sync-terraform-plan-file=out.tfplan \
+            --terraform-plan-file=out.tfplan \
             --debug-preview-url preview_url.txt \
             --continue-on-error \
             --terragrunt \
