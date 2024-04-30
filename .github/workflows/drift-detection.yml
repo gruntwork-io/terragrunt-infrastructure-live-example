@@ -69,8 +69,8 @@ jobs:
         run: |
           terramate run \
             --parallel 5 \
-            --sync-drift-status \
-            --sync-terraform-plan-file=drift.tfplan \
+            --cloud-sync-drift-status \
+            --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
         env:
@@ -91,7 +91,7 @@ jobs:
         run: |
           terramate run \
             --cloud-status=drifted \
-            --tags reconcile,
+            --tags reconcile \
             --cloud-sync-deployment \
             --cloud-sync-terraform-plan-file=drift.tfplan \
             --terragrunt \
