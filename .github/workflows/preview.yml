@@ -94,8 +94,8 @@ jobs:
           terramate run \
             --parallel 5 \
             --changed \
-            --cloud-sync-preview \
-            --cloud-sync-terraform-plan-file=out.tfplan \
+            --sync-preview \
+            --sync-terraform-plan-file=out.tfplan \
             --debug-preview-url preview_url.txt \
             --continue-on-error \
             --terragrunt \
