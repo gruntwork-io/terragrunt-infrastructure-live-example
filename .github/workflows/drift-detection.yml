@@ -70,7 +70,7 @@ jobs:
           terramate run \
             --parallel 5 \
             --cloud-sync-drift-status \
-            --cloud-sync-terraform-plan-file=drift.tfplan \
+            --terraform-plan-file=drift.tfplan \
             --terragrunt \
             -- terragrunt plan -out drift.tfplan -detailed-exitcode -lock=false
         env:
@@ -93,7 +93,7 @@ jobs:
             --cloud-status=drifted \
             --tags reconcile \
             --cloud-sync-deployment \
-            --cloud-sync-terraform-plan-file=drift.tfplan \
+            --terraform-plan-file=drift.tfplan \
             --terragrunt \
             -- \
             terragrunt apply -input=false -auto-approve -lock-timeout=5m drift.tfplan
