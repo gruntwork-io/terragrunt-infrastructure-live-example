@@ -23,9 +23,6 @@ features of Terragrunt used in this folder organization.
 Note: This code is solely for demonstration purposes. This is not production-ready code, so use at your own risk. If
 you are interested in battle-tested, production-ready Terraform code, check out [Gruntwork](http://www.gruntwork.io/).
 
-
-
-
 ## How do you deploy the infrastructure in this repo?
 
 
@@ -102,11 +99,6 @@ You can use the `endpoint` and `db_name` outputs with any MySQL client:
 mysql --host=tofu-1234567890.abcdefghijklmonp.us-east-1.rds.amazonaws.com:3306 --user=admin --password mysql_prod
 ```
 
-
-
-
-
-
 ## How is the code in this repo organized?
 
 The code in this repo uses the following folder hierarchy:
@@ -147,3 +139,15 @@ Where:
 In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each
 of your modules. Rather than copy/pasting the same variables into each `terragrunt.hcl` file, in every region, and in
 every environment, you can inherit them from the `inputs` defined in the `root.hcl` file.
+
+## What to do with `.terraform.lock.hcl` files
+
+When you run `terragrunt` commands you may find that `.terraform.lock.hcl` files are created in your working directories.
+
+These files are intentionally not committed to this example repository, but you definitely should in your own repositories!
+
+They help make sure that your IaC results in reproducible infrastructure. For more on this, read [Lock File Handling docs](https://terragrunt.gruntwork.io/docs/features/lock-file-handling/).
+
+## How to get help
+
+If you need help troubleshooting usage of this repo, or Terragrunt in general, check out the [Support docs](https://terragrunt.gruntwork.io/docs/community/support/).
