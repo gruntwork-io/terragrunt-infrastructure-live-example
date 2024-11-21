@@ -33,7 +33,7 @@ you are interested in battle-tested, production-ready Terraform code, check out 
 
 1. Install [OpenTofu](https://opentofu.org/) version `1.6.0` or newer and
    [Terragrunt](https://github.com/gruntwork-io/terragrunt) version `v0.52.0` or newer.
-2. Update the `bucket` parameter in the root `terragrunt.hcl`. We use S3 [as a Terraform
+2. Update the `bucket` parameter in the `root.hcl` file. We use S3 [as a Terraform
    backend](https://opentofu.org/docs/language/settings/backends/s3/) to store your
    state, and S3 bucket names must be globally unique. The name currently in
    the file is already taken, so you'll have to specify your own. Alternatives, you can
@@ -146,4 +146,4 @@ Where:
 
 In the situation where you have multiple AWS accounts or regions, you often have to pass common variables down to each
 of your modules. Rather than copy/pasting the same variables into each `terragrunt.hcl` file, in every region, and in
-every environment, you can inherit them from the `inputs` defined in the root `terragrunt.hcl` file.
+every environment, you can inherit them from the `inputs` defined in the `root.hcl` file.
