@@ -1,12 +1,17 @@
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_terragrunt-infra-live-example)
 
+> [!WARNING]
+> This repository has been deprecated in favor of [terragrunt-infrastructure-live-stacks-example](https://github.com/gruntwork-io/terragrunt-infrastructure-live-stacks-example). Please use the new repository for the latest best practices and features.
+>
+> Take special notice of the [Migration Guide](https://github.com/gruntwork-io/terragrunt-infrastructure-live-stacks-example/blob/main/docs/migration-guide.md) specifically written to help you migrate from using this repo to the new one.
+
 # Example infrastructure-live for Terragrunt
 
 This repo, along with the [terragrunt-infrastructure-modules-example
 repo](https://github.com/gruntwork-io/terragrunt-infrastructure-modules-example), show an example file/folder structure
 you can use with [Terragrunt](https://github.com/gruntwork-io/terragrunt) to keep your
-[Terraform](https://www.terraform.io) and [OpenTofu](https://opentofu.org/) code DRY. For background information, 
-check out the [Keep your code DRY](https://github.com/gruntwork-io/terragrunt#keep-your-terraform-code-dry) 
+[OpenTofu](https://opentofu.org/) and [Terraform](https://www.terraform.io) code DRY. For background information,
+check out the [Keep your code DRY](https://github.com/gruntwork-io/terragrunt#keep-your-terraform-code-dry)
 section of the Terragrunt documentation.
 
 This repo shows an example of how to use the modules from the `terragrunt-infrastructure-modules-example` repo to
@@ -36,7 +41,7 @@ you are interested in battle-tested, production-ready Terraform code, check out 
    the file is already taken, so you'll have to specify your own. Alternatives, you can
    set the environment variable `TG_BUCKET_PREFIX` to set a custom prefix.
 3. Update the `account_name` and `aws_account_id` parameters in [`non-prod/account.hcl`](/non-prod/account.hcl) and
-   [`prod/account.hcl`](/prod/account.hcl) with the names and IDs of accounts you want to use for non production and 
+   [`prod/account.hcl`](/prod/account.hcl) with the names and IDs of accounts you want to use for non production and
    production workloads, respectively.
 4. Configure your AWS credentials using one of the supported [authentication
    mechanisms](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
